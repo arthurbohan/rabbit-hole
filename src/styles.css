@@ -85,6 +85,7 @@ button {
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  text-decoration: none;
   color: var(--dust);
   border-bottom: 1px solid var(--line);
   padding-bottom: 3px;
@@ -328,6 +329,27 @@ button {
   border-color: var(--ultra);
 }
 
+.rh-listen-play {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1;
+  color: var(--ultra);
+  transition: color 0.18s;
+}
+
+.rh-listen-play:hover:not(:disabled) {
+  color: var(--paper);
+}
+
+.rh-listen-play:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.rh-listen-play-none {
+  color: var(--dust);
+}
+
 .rh-actions {
   display: flex;
   gap: 20px;
@@ -341,7 +363,8 @@ button {
   text-transform: uppercase;
   color: var(--dust);
   border-bottom: 1px solid transparent;
-  padding-bottom: 2px;
+  padding: 0 0 2px;
+  margin: 0;
   transition: all 0.18s;
 }
 
@@ -464,6 +487,14 @@ button {
   font-style: italic;
 }
 
+.rh-panel-hint {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dust);
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
 .rh-close {
   font-family: var(--mono);
   font-size: 12px;
@@ -479,11 +510,30 @@ button {
   border-bottom: 1px solid var(--line);
 }
 
+.rh-crate-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
 .rh-crate-name {
   font-family: var(--display);
   font-weight: 700;
   font-size: 18px;
-  margin: 0 0 4px;
+  margin: 0;
+}
+
+.rh-crate-name-link {
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  transition: color 0.18s;
+}
+
+.rh-crate-name-link:hover {
+  color: var(--sulphur);
 }
 
 .rh-crate-track {
@@ -503,20 +553,24 @@ button {
 
 .rh-crate-item .rh-listen {
   margin: 10px 0 0;
-  gap: 12px;
+  gap: 8px;
+}
+
+.rh-crate-item .rh-listen-link {
+  font-size: 11px;
 }
 
 .rh-remove {
-  font-family: var(--mono);
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
   color: var(--dust);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-top: 8px;
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity 0.2s;
 }
 
 .rh-remove:hover {
-  color: var(--sulphur);
+  opacity: 1;
 }
 
 @media (max-width: 620px) {

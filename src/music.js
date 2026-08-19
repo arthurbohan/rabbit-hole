@@ -44,24 +44,25 @@ export const SEEDS = [
 export const SERVICES = [
   {
     label: 'YouTube',
-    url: (q) => `https://www.youtube.com/results?search_query=${q}`,
+    url: (q) => `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`,
   },
-  { label: 'Bandcamp', url: (q) => `https://bandcamp.com/search?q=${q}` },
+  { label: 'Bandcamp', url: (q) => `https://bandcamp.com/search?q=${encodeURIComponent(q)}` },
   {
     label: 'Apple Music',
-    url: (q) => `https://music.apple.com/search?term=${q}`,
+    url: (q) => `https://music.apple.com/search?term=${encodeURIComponent(q)}`,
   },
-  { label: 'Spotify', url: (q) => `https://open.spotify.com/search/${q}` },
+  { label: 'Spotify', url: (q) => `https://open.spotify.com/search/${encodeURIComponent(q)}` },
 ]
 
 // "Artist — Track title (1974)" searches badly. Strip the year and the dashes.
+// Returns the raw, unencoded term — callers encode it for their own use.
 export function searchTerm(name, track) {
   const cleaned = (track || '')
     .replace(/\((?:19|20)\d{2}\)/g, '')
     .replace(/[—–-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
-  return encodeURIComponent(cleaned || name)
+  return cleaned || name
 }
 
 export function randomSeed() {

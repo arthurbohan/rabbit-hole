@@ -53,7 +53,7 @@ Map five directions someone could travel from here.
 Return ONLY a JSON object. No markdown fences, no preamble, no trailing text.
 
 {
-  "node": { "name": "canonical name of the starting point", "tagline": "max 18 words — what this is and where it sits" },
+  "node": { "name": "canonical name of the starting point", "tagline": "max 18 words — what this is and where it sits", "track": "Artist — Track title (year)" },
   "branches": [
     { "relation": "ANCESTOR", "name": "artist or album", "why": "one sentence, max 26 words, specific about the musical link", "track": "Artist — Track title (year)" },
     { "relation": "CONTEMPORARY", "name": "...", "why": "...", "track": "..." },
@@ -67,7 +67,7 @@ Rules:
 - Exactly five branches, in that order.
 - ANCESTOR came before and fed into it. CONTEMPORARY sat alongside it. MUTATION took it somewhere strange. DISTANT RELATIVE sounds unlike it but shares a structural or rhythmic spine — make this one a real reach across genre or geography. INHERITOR carries it forward.
 - Name specific artists or albums, not genres.
-- The track is the best door into that artist, not their most famous song.
+- Every track (node and branches alike) is the best door into that artist, not their most famous song.
 - "why" must point at something concrete: a rhythm, a tuning, a production choice, a shared player, a lineage.
 ${avoid ? `- Do not name any of these, they have already been visited: ${avoid}` : ''}`
 }

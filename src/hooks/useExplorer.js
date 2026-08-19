@@ -1,15 +1,35 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { askGemini, parseJSON, branchPrompt } from '../api.js'
 import { randomSeed } from '../music.js'
 
+const SESSION_KEY = 'rabbithole:session:v1'
+
+function loadSession() {
+  try {
+    return JSON.parse(localStorage.getItem(SESSION_KEY)) || {}
+  } catch {
+    return {}
+  }
+}
+
 export function useExplorer({ onExploreStart } = {}) {
   const [query, setQuery] = useState('')
-  const [current, setCurrent] = useState(null)
-  const [branches, setBranches] = useState([])
-  const [trail, setTrail] = useState([])
+  const [current, setCurrent] = useState(() => loadSession().current || null)
+  const [branches, setBranches] = useState(() => loadSession().branches || [])
+  const [trail, setTrail] = useState(() => loadSession().trail || [])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const lastAttempt = useRef(null)
+
+  // Keep the current page across reloads — only the "which page am I on"
+  // state, not loading/error, which shouldn't survive a refresh.
+  useEffect(() => {
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ current, branches, trail }))
+    } catch (e) {
+      console.error('Could not save session', e)
+    }
+  }, [current, branches, trail])
 
   const explore = useCallback(
     async (name, visited = []) => {

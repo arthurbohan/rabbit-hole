@@ -2,7 +2,7 @@ export default function AuthButton({ user, onLogout }) {
   if (!user) {
     return (
       <a className='rh-crate-btn' data-testid='login' href='/api/auth/google'>
-        Sign in with Google
+        Sign in
       </a>
     )
   }

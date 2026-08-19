@@ -116,8 +116,13 @@ export default function App() {
       <CratePanel
         open={crateOpen}
         crate={crate}
+        user={user}
         onClose={() => setCrateOpen(false)}
         onRemove={removeFromCrate}
+        onExplore={(name) => {
+          start(name)
+          setCrateOpen(false)
+        }}
       />
     </div>
   )
