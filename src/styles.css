@@ -73,6 +73,13 @@ button {
   color: var(--sulphur);
 }
 
+.rh-top-actions {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .rh-crate-btn {
   font-family: var(--mono);
   font-size: 12px;

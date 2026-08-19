@@ -1,16 +1,11 @@
-import { useCrate } from './hooks/useCrate.js'
-import { useExplorer } from './hooks/useExplorer.js'
-import { useDeepDive } from './hooks/useDeepDive.js'
+import { useCrate, useExplorer, useDeepDive, useAuth } from './hooks/index.js'
 import { deepPrompt, nodePrompt } from './api.js'
-import SearchBar from './components/SearchBar.jsx'
-import Trail from './components/Trail.jsx'
-import BranchCard from './components/BranchCard.jsx'
-import CratePanel from './components/CratePanel.jsx'
-import ListenRow from './components/ListenRow.jsx'
+import { SearchBar, Trail, BranchCard, NodeCard, CratePanel, AuthButton } from './components/index.js'
 
 export default function App() {
   const deepDive = useDeepDive()
   const explorer = useExplorer({ onExploreStart: deepDive.reset })
+  const { user, logout } = useAuth()
   const {
     crate,
     crateOpen,
@@ -18,7 +13,7 @@ export default function App() {
     inCrate,
     addToCrate,
     removeFromCrate,
-  } = useCrate()
+  } = useCrate(user)
 
   const {
     query,
@@ -42,13 +37,16 @@ export default function App() {
           <div className='rh-mark'>
             Rabbit <span>Hole</span>
           </div>
-          <button
-            className='rh-crate-btn'
-            data-testid='crate-toggle'
-            onClick={() => setCrateOpen(true)}
-          >
-            Crate · {crate.length}
-          </button>
+          <div className='rh-top-actions'>
+            <AuthButton user={user} onLogout={logout} />
+            <button
+              className='rh-crate-btn'
+              data-testid='crate-toggle'
+              onClick={() => setCrateOpen(true)}
+            >
+              Crate · {crate.length}
+            </button>
+          </div>
         </header>
 
         <SearchBar
@@ -86,33 +84,14 @@ export default function App() {
 
         {!loading && current && (
           <main>
-            <div className='rh-node-block'>
-              <div className='rh-eyebrow'>Now at</div>
-              <h1 className='rh-node-name' data-testid='node-name'>
-                {current.name}
-              </h1>
-              <p className='rh-tagline'>{current.tagline}</p>
-              <ListenRow name={current.name} />
-              <div className='rh-actions'>
-                <button
-                  className={`rh-act ${deep.node ? 'is-on' : ''}`}
-                  onClick={() => digDeeper('node', nodePrompt(current.name))}
-                >
-                  {deepLoading === 'node'
-                    ? 'Reading…'
-                    : deep.node
-                      ? 'Close notes'
-                      : 'Dig deeper'}
-                </button>
-                <button
-                  className={`rh-act ${inCrate(current) ? 'is-on' : ''}`}
-                  onClick={() => addToCrate(current)}
-                >
-                  {inCrate(current) ? 'In crate' : 'Add to crate'}
-                </button>
-              </div>
-              {deep.node && <div className='rh-deep'>{deep.node}</div>}
-            </div>
+            <NodeCard
+              node={current}
+              deepText={deep.node}
+              isDeepLoading={deepLoading === 'node'}
+              isInCrate={inCrate(current)}
+              onDigDeeper={() => digDeeper('node', nodePrompt(current.name))}
+              onAddToCrate={() => addToCrate(current)}
+            />
 
             {branches.map((branch, i) => (
               <BranchCard
