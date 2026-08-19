@@ -4,15 +4,17 @@ A music explorer: type in a starting point, get five directions with an explanat
 
 ## Running it
 
-Two servers, two terminals — Vite doesn't talk to Google or your database directly anymore, it proxies everything to the local Express server:
+Two servers — Vite doesn't talk to Google or your database directly anymore, it proxies everything to the local Express server:
 
 ```bash
 npm install
+npm run dev:all   # Express on :3000 + Vite on :5173, one command, one Ctrl+C stops both
+```
 
-# terminal 1
+Or run them separately in two terminals when you want their logs apart:
+
+```bash
 npm run server:dev   # Express on :3000 — Gemini proxy, auth, crate, previews
-
-# terminal 2
 npm run dev           # Vite on :5173 — the actual app
 ```
 
@@ -53,6 +55,7 @@ server/
     crate.js                  per-user crate CRUD
     preview.js                 iTunes Search → 30-second preview URL
   services/               one file per route above, holds the actual logic
+scripts/dev.sh          runs server:dev + dev together, kills both on exit
 ```
 
 ### About the key
