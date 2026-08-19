@@ -25,6 +25,13 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     UNIQUE(user_id, item_id)
   );
+
+  CREATE TABLE IF NOT EXISTS gemini_cache (
+    cache_key TEXT PRIMARY KEY,
+    content_type TEXT,
+    body BLOB NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 `)
 
 export default db

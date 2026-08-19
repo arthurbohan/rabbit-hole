@@ -27,6 +27,7 @@ export default function App() {
     surprise,
     goTo,
     jumpBack,
+    retry,
   } = explorer
   const { deep, deepLoading, digDeeper } = deepDive
 
@@ -70,6 +71,9 @@ export default function App() {
         {error && !loading && (
           <div className='rh-state' data-testid='error'>
             {error}
+            <button className='rh-retry' data-testid='retry' onClick={retry}>
+              Try again
+            </button>
           </div>
         )}
 

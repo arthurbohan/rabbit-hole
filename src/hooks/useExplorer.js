@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { askGemini, parseJSON, branchPrompt } from '../api.js'
 import { randomSeed } from '../music.js'
 
@@ -9,9 +9,11 @@ export function useExplorer({ onExploreStart } = {}) {
   const [trail, setTrail] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const lastAttempt = useRef(null)
 
   const explore = useCallback(
     async (name, visited = []) => {
+      lastAttempt.current = { name, visited }
       setLoading(true)
       setError(null)
       onExploreStart?.()
@@ -28,6 +30,11 @@ export function useExplorer({ onExploreStart } = {}) {
     },
     [onExploreStart]
   )
+
+  const retry = useCallback(() => {
+    if (!lastAttempt.current) return
+    explore(lastAttempt.current.name, lastAttempt.current.visited)
+  }, [explore])
 
   const start = (name) => {
     if (!name.trim()) return
@@ -74,5 +81,6 @@ export function useExplorer({ onExploreStart } = {}) {
     surprise,
     goTo,
     jumpBack,
+    retry,
   }
 }
