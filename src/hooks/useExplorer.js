@@ -12,7 +12,7 @@ function loadSession() {
   }
 }
 
-export function useExplorer({ onExploreStart } = {}) {
+export function useExplorer({ onExploreStart, user } = {}) {
   const [query, setQuery] = useState('')
   const [current, setCurrent] = useState(() => loadSession().current || null)
   const [branches, setBranches] = useState(() => loadSession().branches || [])
@@ -20,16 +20,41 @@ export function useExplorer({ onExploreStart } = {}) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const lastAttempt = useRef(null)
+  const syncedUserId = useRef(null)
 
   // Keep the current page across reloads — only the "which page am I on"
-  // state, not loading/error, which shouldn't survive a refresh.
+  // state, not loading/error, which shouldn't survive a refresh. While
+  // signed in, also push it to the server so it follows the account.
   useEffect(() => {
     try {
       localStorage.setItem(SESSION_KEY, JSON.stringify({ current, branches, trail }))
     } catch (e) {
       console.error('Could not save session', e)
     }
-  }, [current, branches, trail])
+    if (user && current) {
+      fetch('/api/trail', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state: { current, branches, trail } })
+      }).catch((e) => console.error('Could not save trail', e))
+    }
+  }, [current, branches, trail, user])
+
+  // On login, resume the position saved on the server if there is one;
+  // otherwise push whatever's currently showing as the starting point.
+  useEffect(() => {
+    if (!user || syncedUserId.current === user.id) return
+    syncedUserId.current = user.id
+    fetch('/api/trail')
+      .then((res) => (res.ok ? res.json() : { state: null }))
+      .then(({ state }) => {
+        if (!state) return
+        setCurrent(state.current || null)
+        setBranches(state.branches || [])
+        setTrail(state.trail || [])
+      })
+      .catch((e) => console.error('Could not sync trail', e))
+  }, [user])
 
   const explore = useCallback(
     async (name, visited = []) => {
