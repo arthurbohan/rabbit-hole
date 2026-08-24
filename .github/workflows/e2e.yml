@@ -2,9 +2,10 @@ name: E2E
 
 # The Playwright test suite for this app doesn't live here — it lives in a
 # separate repo (saucedemo-playwright, aka "productstore") as a Docker/
-# cross-repo practice setup. This workflow checks out both repos side by
-# side and runs the same `docker compose` command used locally, so every
-# PR here gets tested against that suite without duplicating it.
+# cross-repo practice setup. This workflow checks both repos out (nested,
+# not sibling — actions/checkout rejects a path outside $GITHUB_WORKSPACE)
+# and runs the same `docker compose` command used locally, so every PR
+# here gets tested against that suite without duplicating it.
 on:
   pull_request:
 
@@ -21,14 +22,14 @@ jobs:
         with:
           repository: arthurbohan/saucedemo-playwright
           ref: develop
-          path: ../productstore
+          path: productstore
 
       - name: Run E2E suite against this PR
-        working-directory: ../productstore
+        working-directory: productstore
         env:
-          # Sibling checkout is named "rabbit-hole" (this repo's GitHub
-          # name) here, not "rabbit hole" (this machine's local directory
-          # name) — see the matching override note in
+          # productstore is nested one level inside this checkout, so the
+          # rabbit-hole source (this checkout's own root) is two levels up
+          # from rabbit-hole-e2e/ — see the matching override note in
           # productstore/rabbit-hole-e2e/docker-compose.yml.
-          RABBIT_HOLE_CONTEXT: ../../rabbit-hole
+          RABBIT_HOLE_CONTEXT: ../..
         run: docker compose -f rabbit-hole-e2e/docker-compose.yml up --build --abort-on-container-exit --exit-code-from tests
