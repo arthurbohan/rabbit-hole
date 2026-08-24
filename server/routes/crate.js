@@ -1,12 +1,10 @@
 import { Router } from 'express'
 import { getCrate, upsertCrateItems, removeCrateItem } from '../services/crateStore.js'
+import { requireAuth } from '../middleware/requireAuth.js'
 
 const router = Router()
 
-router.use((req, res, next) => {
-  if (!req.session.userId) return res.status(401).json({ error: 'Not logged in' })
-  next()
-})
+router.use(requireAuth)
 
 function isValidItem(item) {
   return (
