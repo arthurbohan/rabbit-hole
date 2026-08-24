@@ -32,6 +32,12 @@ db.exec(`
     body BLOB NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS trail_state (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id),
+    state TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 `)
 
 export default db
