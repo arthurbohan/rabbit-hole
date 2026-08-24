@@ -1,6 +1,6 @@
 # Rabbit Hole
 
-A music explorer: type in a starting point, get five directions with an explanation of the connection and a track to get you in. Sign in with Google to sync your Crate across devices; without signing in, it's saved locally in your browser.
+A music explorer: type in a starting point, get five directions with an explanation of the connection and a track to get you in. Sign in with Google to sync your Crate and your current position across devices; without signing in, both are saved locally in your browser.
 
 ## Running it
 
@@ -48,11 +48,12 @@ src/styles.css          all styling
 server/
   index.js               entry point, starts listening
   app.js                  sessions, mounts every route, serves dist/ in prod
-  db.js                    SQLite schema — users, crate_items, gemini_cache
+  db.js                    SQLite schema — users, crate_items, gemini_cache, trail_state
   routes/
     gemini.js               proxies to Google with the key attached
     auth.js                  Google OAuth login flow
     crate.js                  per-user crate CRUD
+    trail.js                   per-user current position (node/branches/trail)
     preview.js                 iTunes Search → 30-second preview URL
   services/               one file per route above, holds the actual logic
 scripts/dev.sh          runs server:dev + dev together, kills both on exit
@@ -62,9 +63,14 @@ scripts/dev.sh          runs server:dev + dev together, kills both on exit
 
 The Gemini key can't live in browser code — anyone who opens DevTools would see it. So the app hits `/api/gemini/...`, and Express attaches the `x-goog-api-key` header server-side. In dev, Vite proxies that route straight through to the local Express instance (see `vite.config.js`); in production, Express handles it directly. Either way, the key never makes it into the bundle.
 
-### Accounts & Crate
+### Accounts, Crate & position
 
-The Crate always saves locally (`localStorage`), logged in or not — that part never changes. Signing in with Google additionally syncs it to a per-user row in SQLite: on login, whatever's in your local Crate is merged into your saved one (nothing is lost), and from then on every add/remove is written to both places. The Crate panel shows a hint when you're not signed in, since in that state it only lives in the current browser.
+Both the Crate and your current position (node, branches, trail) always save locally (`localStorage`), logged in or not — that part never changes. Signing in with Google additionally syncs them to SQLite, per user, but with different merge rules:
+
+- **Crate** — on login, whatever's in your local Crate is merged into your saved one (nothing is lost), and from then on every add/remove is written to both places.
+- **Position** — on login, if the server already has a saved position it wins and replaces whatever's local (picking up where you left off elsewhere); if the server has nothing yet, your current local position is pushed up. From then on, every move updates the server too.
+
+The Crate panel shows a hint when you're not signed in, since in that state it only lives in the current browser.
 
 ### Gemini response caching
 
@@ -92,5 +98,4 @@ The model string lives in `src/api.js` (`MODEL`). Model names change — the cur
 ## What's left to do
 
 - Export the Crate as text or a playlist
-- Sync the whole route (trail), not just the Crate, to the database per signed-in user — it currently only survives a reload via `localStorage`, not a cross-device login
 - Playwright tests — `data-testid` attributes are already in place in the markup

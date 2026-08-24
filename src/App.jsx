@@ -4,8 +4,8 @@ import { SearchBar, Trail, BranchCard, NodeCard, CratePanel, AuthButton } from '
 
 export default function App() {
   const deepDive = useDeepDive()
-  const explorer = useExplorer({ onExploreStart: deepDive.reset })
   const { user, logout } = useAuth()
+  const explorer = useExplorer({ onExploreStart: deepDive.reset, user })
   const {
     crate,
     crateOpen,
