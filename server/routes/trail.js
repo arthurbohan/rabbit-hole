@@ -1,12 +1,10 @@
 import { Router } from 'express'
 import { getTrail, saveTrail } from '../services/trailStore.js'
+import { requireAuth } from '../middleware/requireAuth.js'
 
 const router = Router()
 
-router.use((req, res, next) => {
-  if (!req.session.userId) return res.status(401).json({ error: 'Not logged in' })
-  next()
-})
+router.use(requireAuth)
 
 function isValidState(state) {
   if (!state || typeof state !== 'object') return false
@@ -18,7 +16,12 @@ function isValidState(state) {
 }
 
 router.get('/', (req, res) => {
-  res.json({ state: getTrail(req.session.userId) })
+  try {
+    res.json({ state: getTrail(req.session.userId) })
+  } catch (e) {
+    console.error(e)
+    res.status(500).json({ error: 'Could not load trail' })
+  }
 })
 
 router.put('/', (req, res) => {
@@ -26,8 +29,13 @@ router.put('/', (req, res) => {
   if (!isValidState(state)) {
     return res.status(400).json({ error: 'state must be { current, branches, trail }' })
   }
-  saveTrail(req.session.userId, state)
-  res.json({ state })
+  try {
+    saveTrail(req.session.userId, state)
+    res.json({ state })
+  } catch (e) {
+    console.error(e)
+    res.status(500).json({ error: 'Could not save trail' })
+  }
 })
 
 export default router
