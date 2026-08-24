@@ -16,7 +16,12 @@ function isValidState(state) {
 }
 
 router.get('/', (req, res) => {
-  res.json({ state: getTrail(req.session.userId) })
+  try {
+    res.json({ state: getTrail(req.session.userId) })
+  } catch (e) {
+    console.error(e)
+    res.status(500).json({ error: 'Could not load trail' })
+  }
 })
 
 router.put('/', (req, res) => {
@@ -24,8 +29,13 @@ router.put('/', (req, res) => {
   if (!isValidState(state)) {
     return res.status(400).json({ error: 'state must be { current, branches, trail }' })
   }
-  saveTrail(req.session.userId, state)
-  res.json({ state })
+  try {
+    saveTrail(req.session.userId, state)
+    res.json({ state })
+  } catch (e) {
+    console.error(e)
+    res.status(500).json({ error: 'Could not save trail' })
+  }
 })
 
 export default router

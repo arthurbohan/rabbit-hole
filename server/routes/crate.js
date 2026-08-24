@@ -18,7 +18,12 @@ function isValidItem(item) {
 }
 
 router.get('/', (req, res) => {
-  res.json({ items: getCrate(req.session.userId) })
+  try {
+    res.json({ items: getCrate(req.session.userId) })
+  } catch (e) {
+    console.error(e)
+    res.status(500).json({ error: 'Could not load crate' })
+  }
 })
 
 router.post('/', (req, res) => {
@@ -26,12 +31,22 @@ router.post('/', (req, res) => {
   if (!Array.isArray(items) || !items.every(isValidItem)) {
     return res.status(400).json({ error: 'items must be an array of { id, name, ... }' })
   }
-  res.json({ items: upsertCrateItems(req.session.userId, items) })
+  try {
+    res.json({ items: upsertCrateItems(req.session.userId, items) })
+  } catch (e) {
+    console.error(e)
+    res.status(500).json({ error: 'Could not save crate' })
+  }
 })
 
 router.delete('/:itemId', (req, res) => {
-  removeCrateItem(req.session.userId, req.params.itemId)
-  res.status(204).end()
+  try {
+    removeCrateItem(req.session.userId, req.params.itemId)
+    res.status(204).end()
+  } catch (e) {
+    console.error(e)
+    res.status(500).json({ error: 'Could not remove crate item' })
+  }
 })
 
 export default router
