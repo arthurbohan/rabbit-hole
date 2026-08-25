@@ -54,12 +54,14 @@ export const SERVICES = [
   { label: 'Spotify', url: (q) => `https://open.spotify.com/search/${encodeURIComponent(q)}` },
 ]
 
-// "Artist — Track title (1974)" searches badly. Strip the year and the dashes.
+// "Artist — Track title (1974)" searches badly. Strip the year and the
+// " — " separator. Only a dash with spaces on both sides counts as a
+// separator — a bare hyphen inside a name (T-Pain, Q-Tip) is left alone.
 // Returns the raw, unencoded term — callers encode it for their own use.
 export function searchTerm(name, track) {
   const cleaned = (track || '')
     .replace(/\((?:19|20)\d{2}\)/g, '')
-    .replace(/[—–-]/g, ' ')
+    .replace(/\s[—–-]\s/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
   return cleaned || name

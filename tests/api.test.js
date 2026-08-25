@@ -25,3 +25,12 @@ test('parseJSON handles a realistic nested branchPrompt-shaped response', () => 
 test('parseJSON throws when there is no JSON object', () => {
   assert.throws(() => parseJSON('no json here'), /No JSON object in response/)
 })
+
+test('parseJSON throws rather than silently returning garbage when stray trailing text has its own brace', () => {
+  // Known limitation, not a fix: the brace search is naive (first "{" to
+  // last "}"), so trailing content with its own "}" — the model ignoring
+  // branchPrompt's "no trailing text" instruction — breaks the slice.
+  // Documenting that this fails loudly (JSON.parse throws) rather than
+  // silently, since the failure mode matters more here than the message.
+  assert.throws(() => parseJSON('{"a": 1} Hope that looks right! :}'))
+})

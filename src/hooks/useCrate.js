@@ -10,7 +10,7 @@ function loadCrate() {
   }
 }
 
-const crateId = (branch) => `${branch.name}::${branch.track || ''}`
+export const crateId = (branch) => `${branch.name}::${branch.track || ''}`
 
 export function useCrate(user) {
   const [crate, setCrate] = useState(loadCrate)
