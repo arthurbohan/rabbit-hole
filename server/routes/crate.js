@@ -6,7 +6,7 @@ const router = Router()
 
 router.use(requireAuth)
 
-function isValidItem(item) {
+export function isValidItem(item) {
   return (
     item &&
     typeof item === 'object' &&

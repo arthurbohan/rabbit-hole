@@ -3,7 +3,10 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const db = new DatabaseSync(path.join(__dirname, 'data.sqlite'))
+// Overridable so tests can point this at ':memory:' instead of touching
+// the real database file.
+const dbPath = process.env.DB_PATH || path.join(__dirname, 'data.sqlite')
+const db = new DatabaseSync(dbPath)
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
