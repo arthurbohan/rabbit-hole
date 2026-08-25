@@ -6,7 +6,7 @@ const router = Router()
 
 router.use(requireAuth)
 
-function isValidState(state) {
+export function isValidState(state) {
   if (!state || typeof state !== 'object') return false
   const { current, branches, trail } = state
   if (current != null && (typeof current !== 'object' || typeof current.name !== 'string')) {
