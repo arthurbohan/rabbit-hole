@@ -23,6 +23,12 @@ test('searchTerm returns a raw string, not URI-encoded', () => {
   assert.equal(result.includes('%'), false)
 })
 
+test('searchTerm preserves a hyphen that is part of a name, not a separator', () => {
+  // Regression test: the separator-stripping regex used to remove every
+  // dash character, mangling "T-Pain" into "T Pain".
+  assert.equal(searchTerm('T-Pain', "T-Pain — I'm Sprung (2005)"), "T-Pain I'm Sprung")
+})
+
 test('randomSeed always returns a member of SEEDS', () => {
   for (let i = 0; i < 20; i++) {
     assert.ok(SEEDS.includes(randomSeed()))
